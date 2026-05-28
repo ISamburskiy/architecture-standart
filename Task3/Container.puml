@@ -23,6 +23,7 @@ System_Boundary(site, "WebSite") {
 
 System_Boundary(ABS, "Main ABS system") {
  Container(ABSdesktop, "Desktop Client", "")
+ Container(ABSgateway, "API gateway", "")
  ContainerDb(ABSDB, "Database", "")
 }
 
@@ -42,17 +43,20 @@ Rel(CC, CCSW, "Uses")
 Rel(CC, CCSWext, "Uses")
 '''
 Rel(ABSDB, sms, "Creates tasks")
-Rel(ABSDB, CCSW, "Transfers info")
-Rel(ABSDB, CCSWext, "Transfers info")
+Rel(siteDepositService, CCSW, "Transfers info")
+Rel(siteDepositService, CCSWext, "Transfers info")
 '''
 Rel(monolith, ABSDB, "Calls", "")
-Rel(IBdepositService, ABSDB, "")
-Rel(siteDepositService, ABSDB, "")
+BiRel(IBdepositService, ABSgateway, "Deposit info")
+BiRel(siteDepositService, ABSgateway, "Deposit info")
 '''
 BiRel(siteBFF, siteDepositService, "")
 BiRel(siteBFF, siteMonolith, "")
 BiRel(BFF, IBdepositService, "")
 BiRel(BFF, monolith, "")
-BiRel(ABSdesktop, ABSDB, "")
+Rel(ABSdesktop, ABSDB, "PL-SQL")
+Rel(ABSgateway, ABSDB,  "PL-SQL")
+
+depositBO--[hidden]left--ABSdesktop
 
 @enduml 
