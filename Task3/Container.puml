@@ -1,0 +1,62 @@
+@startuml container_dia
+!includeurl https://raw.githubusercontent.com/RicardoNiepel/C4-PlantUML/master/C4_Container.puml
+
+Person(Client, "Client", "Bank client")
+Person(CC, "CC-operator", "Call-center operator")
+Person(loanBO, "Loans back-office", "Loans back-office employee")
+Person(depositBO, "Deposits back-office", "Deposits back-office employee")
+
+
+System_Boundary(IB, "Internet-Bank") {
+  Container(monolith, "Monolith", "")
+  Container(IBdepositService, "Deposit Service", "Manages communication with ABS on deposits")
+  ContainerDb(IBDB, "Database", "")
+  Container(BFF, "BFF", "")
+}
+
+System_Boundary(site, "WebSite") {
+  Container(siteDepositService, "Deposit Service", "Manages communication with ABS on deposits")
+  Container(siteMonolith, "Monolith", "")
+  ContainerDb(siteDB, "Database", "")
+  Container(siteBFF, "BFF", "")
+}
+
+System_Boundary(ABS, "Main ABS system") {
+ Container(ABSdesktop, "Desktop Client", "")
+ Container(ABSgateway, "API gateway", "")
+ ContainerDb(ABSDB, "Database", "")
+}
+
+
+System_Ext(CCSW, "Call-center software")
+System_Ext(CCSWext, "External call-center software")
+System_Ext(sms, "SMS-hub")
+'''
+Rel(Client, siteBFF, "")
+Rel(Client, BFF, "")
+'''
+Rel(loanBO, ABSdesktop, "Publishes rates")
+Rel(depositBO, ABSdesktop, "Gets rates")
+Rel(depositBO, ABSdesktop, "Manages applications")
+'''
+Rel(CC, CCSW, "Uses")
+Rel(CC, CCSWext, "Uses")
+'''
+Rel(ABSDB, sms, "Creates tasks")
+Rel(siteDepositService, CCSW, "Transfers info")
+Rel(siteDepositService, CCSWext, "Transfers info")
+'''
+Rel(monolith, ABSDB, "Calls", "")
+BiRel(IBdepositService, ABSgateway, "Deposit info")
+BiRel(siteDepositService, ABSgateway, "Deposit info")
+'''
+BiRel(siteBFF, siteDepositService, "")
+BiRel(siteBFF, siteMonolith, "")
+BiRel(BFF, IBdepositService, "")
+BiRel(BFF, monolith, "")
+Rel(ABSdesktop, ABSDB, "PL-SQL")
+Rel(ABSgateway, ABSDB,  "PL-SQL")
+
+depositBO--[hidden]left--ABSdesktop
+
+@enduml 

@@ -1,0 +1,38 @@
+@startuml context_dia
+!includeurl https://raw.githubusercontent.com/RicardoNiepel/C4-PlantUML/master/C4_Component.puml
+
+'''
+Person(Client, "Client", "Bank client")
+Person(CC, "CC-operator", "Call-center operator")
+Person(loanBO, "Loans back-office", "Loans back-office employee")
+Person(depositBO, "Deposits back-office", "Deposits back-office employee")
+'''
+System(ABS, "ABS", "Main internal system")
+System(site, "Bank website")
+System(IB, "Internet-Bank")
+'''
+System_Ext(CCSW, "Call-center software")
+System_Ext(CCSWext, "External call-center software")
+System_Ext(sms, "SMS-hub")
+'''
+CCSW --[hidden]left-- CCSWext
+CCSW --[hidden]down-- CC
+'''
+Rel(Client, site, "")
+Rel(Client, IB, "")
+Rel(CC, CCSW, "Uses")
+Rel(CC, CCSWext, "Uses")
+'''
+Rel(site, ABS, "Calls", "HTTPS")
+Rel(IB, ABS, "Calls", "HTTPS")
+'''
+Rel(loanBO, ABS, "Uses")
+Rel(depositBO, ABS, "Uses")
+'''
+Rel(ABS, sms, "Creates tasks")
+Rel(site, CCSW, "Transfers info")
+Rel(site, CCSWext, "Transfers info")
+Rel(ABS, CCSW, "Transfers rates data", "HTTPS")
+Rel(ABS, CCSWext, "Mail with rates", "email")
+
+@enduml 
